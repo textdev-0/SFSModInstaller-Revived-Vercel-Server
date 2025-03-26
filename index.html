@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SFSModInstaller API Server</title>
+    <script>
+        // API Routes Handler
+        async function handleRequest(request) {
+            const url = new URL(request.url);
+            const path = url.pathname;
+            const params = Object.fromEntries(url.searchParams);
+            
+            // Health check endpoint
+            if (path === '/health') {
+                return new Response(JSON.stringify({ status: "ok" }), {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
+            
+            // List mods endpoint
+            else if (path === '/mods') {
+                const limit = parseInt(params.limit) || 10;
+                const offset = parseInt(params.offset) || 0;
+                const tags = params.tags || "";
+                const q = params.q || "";
+                
+                // Mock data - in a real implementation, this would query a database
+                const mods = [
+                    {
+                        "modID": "example-mod-1",
+                        "name": "Example Mod 1",
+                        "description": "This is an example mod for testing",
+                        "tags": ["parts", "utility"],
+                        "versions": ["1.0.0", "1.1.0"],
+                        "author": "TestDev"
+                    },
+                    {
+                        "modID": "example-mod-2",
+                        "name": "Example Mod 2",
+                        "description": "Another example mod",
+                        "tags": ["visual", "planets"],
+                        "versions": ["1.0.0"],
+                        "author": "TestDev"
+                    }
+                ];
+                
+                return new Response(JSON.stringify(mods), {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
+            
+            // Total mods count endpoint
+            else if (path === '/total') {
+                const tags = params.tags || "";
+                const q = params.q || "";
+                
+                // Mock total count - would be from database in real implementation
+                return new Response(JSON.stringify({ total: 2 }), {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
+            
+            // Specific mod details
+            else if (path.match(/^\/mods\/[\w-]+$/)) {
+                const modId = path.split('/')[2];
+                
+                // Mock mod data
+                const modData = {
+                    "modID": modId,
+                    "name": `Mod ${modId}`,
+                    "description": "Detailed description of the mod",
+                    "tags": ["parts", "utility"],
+                    "versions": ["1.0.0", "1.1.0"],
+                    "author": "TestDev"
+                };
+                
+                return new Response(JSON.stringify(modData), {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
+            
+            // Mod versions list
+            else if (path.match(/^\/mods\/[\w-]+\/versions\/?$/)) {
+                const modId = path.split('/')[2];
+                
+                // Mock versions data
+                const versions = ["1.0.0", "1.1.0"];
+                
+                return new Response(JSON.stringify(versions), {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
+            
+            // Specific mod version details
+            else if (path.match(/^\/mods\/[\w-]+\/versions\/[\w.]+$/)) {
+                const parts = path.split('/');
+                const modId = parts[2];
+                const version = parts[4];
+                
+                // Mock version data
+                const versionData = {
+                    "modVersionID": 123,
+                    "version": version,
+                    "modID": modId,
+                    "releaseDate": "2023-01-01",
+                    "changelog": "Fixed bugs and added features"
+                };
+                
+                return new Response(JSON.stringify(versionData), {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
+            
+            // Alternative version endpoint
+            else if (path.match(/^\/version\/alternative\/[\w-]+\/[\w.]+$/)) {
+                const parts = path.split('/');
+                const modId = parts[3];
+                const version = parts[4];
+                
+                // Mock version ID data
+                const versionData = {
+                    "modVersionID": 123
+                };
+                
+                return new Response(JSON.stringify(versionData), {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
+            
+            // Download links endpoint
+            else if (path.match(/^\/download\/\d+$/)) {
+                const modVersionID = path.split('/')[2];
+                
+                // Mock download data
+                const downloadData = [
+                    {
+                        "fileURL": "https://example.com/downloads/mod.zip",
+                        "fileType": "zip"
+                    }
+                ];
+                
+                return new Response(JSON.stringify(downloadData), {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
+            
+            // Not found for any other routes
+            return new Response(JSON.stringify({ error: "Not found" }), {
+                status: 404,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+
+        // Set up the service worker to handle all requests
+        if (typeof addEventListener !== 'undefined') {
+            addEventListener('fetch', event => {
+                event.respondWith(handleRequest(event.request));
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>SFSModInstaller API Server</h1>
+    <p>This is the API server for SFSModInstaller-Revived.</p>
+    <p>Available endpoints:</p>
+    <ul>
+        <li>/health - Health check endpoint</li>
+        <li>/mods - List mods (params: limit, offset, tags, q)</li>
+        <li>/total - Get total mod count (params: tags, q)</li>
+        <li>/mods/{modId} - Get specific mod details</li>
+        <li>/mods/{modId}/versions/ - Get all versions of a mod</li>
+        <li>/mods/{modId}/versions/{version} - Get specific version details</li>
+        <li>/version/alternative/{modId}/{versionNumber} - Get version ID</li>
+        <li>/download/{modVersionID} - Get download links</li>
+    </ul>
+</body>
+</html>
