@@ -1,0 +1,21 @@
+{
+    "name": "sfsmodinstaller-api-server",
+    "version": "1.0.0",
+    "description": "API server for SFSModInstaller-Revived",
+    "main": "index.js",
+    "scripts": {
+        "dev": "npx http-server -p 3000",
+        "start": "npx http-server -p 3000"
+    },
+    "keywords": [
+        "sfs",
+        "mod",
+        "installer",
+        "api"
+    ],
+    "author": "",
+    "license": "MIT",
+    "devDependencies": {
+        "http-server": "^14.1.1"
+    }
+}
